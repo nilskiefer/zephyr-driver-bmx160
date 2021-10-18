@@ -6,7 +6,9 @@
  *
  ***************************************************************************************************
  * \copyright
- * Copyright 2021 Cypress Semiconductor Corporation
+ * Copyright 2021 Cypress Semiconductor Corporation (an Infineon company) or
+ * an affiliate of Cypress Semiconductor Corporation
+ *
  * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,7 +51,7 @@ static cyhal_gpio_t spi_ssel = NC;
 //--------------------------------------------------------------------------------------------------
 static int8_t i2c_write_bytes(uint8_t dev_addr, uint8_t reg_addr, uint8_t* data, uint16_t len)
 {
-    CY_ASSERT(len + 1 < I2C_WRITE_BUFFER_LENGTH);
+    CY_ASSERT((len + 1) < I2C_WRITE_BUFFER_LENGTH);
     uint8_t buf[I2C_WRITE_BUFFER_LENGTH];
     buf[0] = reg_addr;
     for (uint16_t i=0; i < len; i++)
@@ -170,6 +172,83 @@ static void delay_us_wrapper(uint32_t period, void* intf_ptr)
 
 
 //--------------------------------------------------------------------------------------------------
+// _mtb_bmx160_pins_equal
+//--------------------------------------------------------------------------------------------------
+static inline bool _mtb_bmx160_pins_equal(_mtb_bmx160_interrupt_pin_t ref_pin, cyhal_gpio_t pin)
+{
+    #if (CYHAL_API_VERSION >= 2)
+    return (ref_pin.pin == pin);
+    #else
+    return (ref_pin == pin);
+    #endif
+}
+
+
+//--------------------------------------------------------------------------------------------------
+// _mtb_bmx160_set_pin
+//--------------------------------------------------------------------------------------------------
+static inline void _mtb_bmx160_set_pin(_mtb_bmx160_interrupt_pin_t* ref_pin, cyhal_gpio_t pin)
+{
+    #if (CYHAL_API_VERSION >= 2)
+    ref_pin->pin = pin;
+    #else
+    *ref_pin = pin;
+    #endif
+}
+
+
+//--------------------------------------------------------------------------------------------------
+// _mtb_bmx160_free_pin
+//--------------------------------------------------------------------------------------------------
+static inline void _mtb_bmx160_free_pin(_mtb_bmx160_interrupt_pin_t ref_pin)
+{
+    #if (CYHAL_API_VERSION >= 2)
+    cyhal_gpio_free(ref_pin.pin);
+    #else
+    cyhal_gpio_free(ref_pin);
+    #endif
+}
+
+
+//--------------------------------------------------------------------------------------------------
+// _mtb_bmx160_config_int
+//--------------------------------------------------------------------------------------------------
+static cy_rslt_t _mtb_bmx160_config_int(_mtb_bmx160_interrupt_pin_t* intpin, cyhal_gpio_t pin,
+                                        bool init, uint8_t intr_priority, cyhal_gpio_event_t event,
+                                        cyhal_gpio_event_callback_t callback, void* callback_arg)
+{
+    cy_rslt_t result = CY_RSLT_SUCCESS;
+
+    if (NULL == callback)
+    {
+        _mtb_bmx160_set_pin(intpin, NC);
+        cyhal_gpio_free(pin);
+    }
+    else
+    {
+        if (init)
+        {
+            result = cyhal_gpio_init(pin, CYHAL_GPIO_DIR_INPUT, CYHAL_GPIO_DRIVE_NONE, 0);
+        }
+        if (CY_RSLT_SUCCESS == result)
+        {
+            _mtb_bmx160_set_pin(intpin, pin);
+            #if (CYHAL_API_VERSION >= 2)
+            intpin->callback = callback;
+            intpin->callback_arg = callback_arg;
+            cyhal_gpio_register_callback(pin, intpin);
+            #else
+            cyhal_gpio_register_callback(pin, callback, callback_arg);
+            #endif
+            cyhal_gpio_enable_event(pin, event, intr_priority, 1);
+        }
+    }
+
+    return result;
+}
+
+
+//--------------------------------------------------------------------------------------------------
 // _mtb_bmx160_init_common
 //--------------------------------------------------------------------------------------------------
 static cy_rslt_t _mtb_bmx160_init_common(mtb_bmx160_t* obj, uint8_t bmm_addr)
@@ -219,8 +298,8 @@ cy_rslt_t mtb_bmx160_init_i2c(mtb_bmx160_t* obj, cyhal_i2c_t* inst, mtb_bmx160_a
     obj->sensor1.read       = (bmi160_read_fptr_t)i2c_read_bytes;
     obj->sensor1.write      = (bmi160_write_fptr_t)i2c_write_bytes;
     obj->sensor1.delay_ms   = delay_ms_wrapper;
-    obj->intpin1            = NC;
-    obj->intpin2            = NC;
+    _mtb_bmx160_set_pin(&(obj->intpin1), NC);
+    _mtb_bmx160_set_pin(&(obj->intpin2), NC);
 
     return _mtb_bmx160_init_common(obj, address & 0xFF);
 }
@@ -242,8 +321,8 @@ cy_rslt_t mtb_bmx160_init_spi(mtb_bmx160_t* obj, cyhal_spi_t* inst, cyhal_gpio_t
     obj->sensor1.read       = (bmi160_read_fptr_t)spi_read_bytes;
     obj->sensor1.write      = (bmi160_write_fptr_t)spi_write_bytes;
     obj->sensor1.delay_ms   = delay_ms_wrapper;
-    obj->intpin1            = NC;
-    obj->intpin2            = NC;
+    _mtb_bmx160_set_pin(&(obj->intpin1), NC);
+    _mtb_bmx160_set_pin(&(obj->intpin2), NC);
 
     return _mtb_bmx160_init_common(obj, BMM150_DEFAULT_I2C_ADDRESS);
 }
@@ -381,38 +460,6 @@ cy_rslt_t mtb_bmx160_selftest(mtb_bmx160_t* obj)
 
 
 //--------------------------------------------------------------------------------------------------
-// _mtb_bmx160_config_int
-//--------------------------------------------------------------------------------------------------
-static cy_rslt_t _mtb_bmx160_config_int(cyhal_gpio_t* intpin, cyhal_gpio_t pin, bool init,
-                                        uint8_t intr_priority, cyhal_gpio_event_t event,
-                                        cyhal_gpio_event_callback_t callback, void* callback_arg)
-{
-    cy_rslt_t result = CY_RSLT_SUCCESS;
-
-    if (NULL == callback)
-    {
-        cyhal_gpio_free(pin);
-        *intpin = NC;
-    }
-    else
-    {
-        if (init)
-        {
-            result = cyhal_gpio_init(pin, CYHAL_GPIO_DIR_INPUT, CYHAL_GPIO_DRIVE_NONE, 0);
-        }
-        if (CY_RSLT_SUCCESS == result)
-        {
-            *intpin = pin;
-            cyhal_gpio_register_callback(pin, callback, callback_arg);
-            cyhal_gpio_enable_event(pin, event, intr_priority, 1);
-        }
-    }
-
-    return result;
-}
-
-
-//--------------------------------------------------------------------------------------------------
 // mtb_bmx160_config_int
 //--------------------------------------------------------------------------------------------------
 cy_rslt_t mtb_bmx160_config_int(mtb_bmx160_t* obj, struct bmi160_int_settg* intsettings,
@@ -421,22 +468,22 @@ cy_rslt_t mtb_bmx160_config_int(mtb_bmx160_t* obj, struct bmi160_int_settg* ints
 {
     cy_rslt_t result;
 
-    if (obj->intpin1 == pin)
+    if (_mtb_bmx160_pins_equal(obj->intpin1, pin))
     {
         result = _mtb_bmx160_config_int(&(obj->intpin1), pin, false, intr_priority, event, callback,
                                         callback_arg);
     }
-    else if (obj->intpin2 == pin)
+    else if (_mtb_bmx160_pins_equal(obj->intpin2, pin))
     {
         result = _mtb_bmx160_config_int(&(obj->intpin2), pin, false, intr_priority, event, callback,
                                         callback_arg);
     }
-    else if (obj->intpin1 == NC)
+    else if (_mtb_bmx160_pins_equal(obj->intpin1, NC))
     {
         result = _mtb_bmx160_config_int(&(obj->intpin1), pin, true, intr_priority, event, callback,
                                         callback_arg);
     }
-    else if (obj->intpin2 == NC)
+    else if (_mtb_bmx160_pins_equal(obj->intpin2, NC))
     {
         result = _mtb_bmx160_config_int(&(obj->intpin2), pin, true, intr_priority, event, callback,
                                         callback_arg);
@@ -464,14 +511,14 @@ cy_rslt_t mtb_bmx160_config_int(mtb_bmx160_t* obj, struct bmi160_int_settg* ints
 //--------------------------------------------------------------------------------------------------
 void mtb_bmx160_free(mtb_bmx160_t* obj)
 {
-    if (obj->intpin1 != NC)
+    if (!_mtb_bmx160_pins_equal(obj->intpin1, NC))
     {
-        cyhal_gpio_free(obj->intpin1);
+        _mtb_bmx160_free_pin(obj->intpin1);
     }
 
-    if (obj->intpin2 != NC)
+    if (!_mtb_bmx160_pins_equal(obj->intpin2, NC))
     {
-        cyhal_gpio_free(obj->intpin2);
+        _mtb_bmx160_free_pin(obj->intpin2);
     }
 
     i2c = NULL;

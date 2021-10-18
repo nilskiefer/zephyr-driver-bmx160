@@ -4,7 +4,9 @@
  * Description: This file is the public interface of the BMX160 orientation sensor.
  ***************************************************************************************************
  * \copyright
- * Copyright 2021 Cypress Semiconductor Corporation
+ * Copyright 2021 Cypress Semiconductor Corporation (an Infineon company) or
+ * an affiliate of Cypress Semiconductor Corporation
+ *
  * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -69,13 +71,27 @@ extern "C"
 {
 #endif
 
-/** Structure holding the sensor instance specific information. */
+/** \cond INTERNAL */
+#if (CYHAL_API_VERSION >= 2)
+typedef cyhal_gpio_callback_data_t  _mtb_bmx160_interrupt_pin_t;
+#else
+typedef cyhal_gpio_t                _mtb_bmx160_interrupt_pin_t;
+#endif
+/** \endcond */
+
+/**
+ * Structure holding the sensor instance specific information.
+ *
+ * Application code should not rely on the specific content of this struct.
+ * They are considered an implementation detail which is subject to change
+ * between platforms and/or library releases.
+ */
 typedef struct
 {
-    struct bmi160_dev sensor1;
-    struct bmm150_dev sensor2;
-    cyhal_gpio_t      intpin1;
-    cyhal_gpio_t      intpin2;
+    struct bmi160_dev           sensor1;
+    struct bmm150_dev           sensor2;
+    _mtb_bmx160_interrupt_pin_t intpin1;
+    _mtb_bmx160_interrupt_pin_t intpin2;
 } mtb_bmx160_t;
 
 /** Structure holding the accelerometer, gyroscope, and magnetometer data read from the device. */

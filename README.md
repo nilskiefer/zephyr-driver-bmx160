@@ -13,7 +13,7 @@ GitHub Magnetometer: https://github.com/BoschSensortec/BMM150-Sensor-API
 ### Quick Start
 Follow the steps below to create a simple application which outputs the
 accelerometer, gyroscope, and magnetometer data from the sensor to the UART
-1. Create an empty PSoC 6 application
+1. Create an empty PSoC™ 6 application
 2. Add this library to the application
 3. Add retarget-io library using the Library Manager
 4. Update the Device ID in the BMI160_driver as mentioned in the Overview
@@ -77,13 +77,13 @@ int main(void)
 
 ### More information
 
-* [API Reference Guide](https://cypresssemiconductorco.github.io/sensor-motion-bmx160/html/index.html)
+* [API Reference Guide](https://infineon.github.io/sensor-motion-bmx160/html/index.html)
 * [Cypress Semiconductor, an Infineon Technologies Company](http://www.cypress.com)
-* [Cypress Semiconductor GitHub](https://github.com/cypresssemiconductorco)
-* [ModusToolbox](https://www.cypress.com/products/modustoolbox-software-environment)
-* [PSoC 6 Code Examples using ModusToolbox IDE](https://github.com/cypresssemiconductorco/Code-Examples-for-ModusToolbox-Software)
-* [PSoC 6 Middleware](https://github.com/cypresssemiconductorco/psoc6-middleware)
-* [PSoC 6 Resources - KBA223067](https://community.cypress.com/docs/DOC-14644)
+* [Infineon GitHub](https://github.com/infineon)
+* [ModusToolbox™](https://www.cypress.com/products/modustoolbox-software-environment)
+* [PSoC™ 6 Code Examples using ModusToolbox™ IDE](https://github.com/infineon/Code-Examples-for-ModusToolbox-Software)
+* [ModusToolbox™ Software](https://github.com/Infineon/modustoolbox-software)
+* [PSoC™ 6 Resources - KBA223067](https://community.cypress.com/docs/DOC-14644)
 
 ---
-© Cypress Semiconductor Corporation, 2021.
+© Cypress Semiconductor Corporation (an Infineon company) or an affiliate of Cypress Semiconductor Corporation, 2021.
