@@ -10,6 +10,9 @@ This library provides functions for interfacing with the BMX-160 I2C/SPI 16-bit 
 * API for testing the sensor
 
 ### What Changed?
+#### v1.0.2
+* Fixed a bug that could cause pointer corruption when using ISRs
+* Added bash script to patch the BMI160 library to allow it to be used with the BMX-160 Device ID
 #### v1.0.1
 * Added support for using with HAL v1 or v2
 #### v1.0.0
@@ -38,4 +41,4 @@ Minimum required ModusToolbox™ Software Environment: v2.0
 * [PSoC™ 6 Resources - KBA223067](https://community.cypress.com/docs/DOC-14644)
 
 ---
-© Cypress Semiconductor Corporation (an Infineon company) or an affiliate of Cypress Semiconductor Corporation, 2021.
+© Cypress Semiconductor Corporation (an Infineon company) or an affiliate of Cypress Semiconductor Corporation, 2021-2023.

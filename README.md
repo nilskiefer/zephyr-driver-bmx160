@@ -4,7 +4,12 @@
 
 This library provides functions for interfacing with the BMX-160 I2C/SPI 16-bit Absolute Orientation Sensor with three axis accelerometer, three axis gyroscope, and three axis magnetometer as used on the CY8CKIT-028-SENSE shield.
 
-NOTE: Bosch does not provide a driver for the BMX160, instead the supported flow is to use the BMI160 and BMM150 drivers together. Unfortunately, this requires a manual edit to the BMI160 driver source code to update the device ID. See the [Bosch community forum](https://community.bosch-sensortec.com/t5/MEMS-sensors-forum/BMX160-driver/m-p/6581) for details.
+NOTE: Bosch does not provide a driver for the BMX160, instead the supported flow is to use the BMI160 and BMM150 drivers together. Unfortunately, this requires a manual edit to the BMI160 driver source code to update the device ID. See the [Bosch community forum](https://community.bosch-sensortec.com/t5/MEMS-sensors-forum/BMX160-driver/m-p/6581) for details. To help mitigate this, a bmx160_fix.sh script is provided that will automatically update the header file to allow the device ID to a custom value via an external define. This can be done for the BMX160 by adding the following to the project makefile:
+```make
+PREBUILD=$(SEARCH_sensor-orientation-bmx160)/bmx160_fix.bash "libs/BMI160_driver/bmi160_defs.h"
+DEFINES+=BMI160_CHIP_ID=UINT8_C\(0xD8\)
+```
+NOTE: The BMI160_driver library should be set as a local asset (instead of shared) when using this script.
 
 Data Sheet: https://www.bosch-sensortec.com/products/motion-sensors/absolute-orientation-sensors/bmx160/
 GitHub Accelerometer & Gyroscope: https://github.com/BoschSensortec/BMI160_driver
@@ -86,4 +91,4 @@ int main(void)
 * [PSoC™ 6 Resources - KBA223067](https://community.cypress.com/docs/DOC-14644)
 
 ---
-© Cypress Semiconductor Corporation (an Infineon company) or an affiliate of Cypress Semiconductor Corporation, 2021.
+© Cypress Semiconductor Corporation (an Infineon company) or an affiliate of Cypress Semiconductor Corporation, 2021-2023.
