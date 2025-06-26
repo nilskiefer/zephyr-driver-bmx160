@@ -1,0 +1,4 @@
+name: bmx160
+build:
+  cmake: .
+  kconfig: Kconfig
