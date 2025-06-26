@@ -91,7 +91,7 @@ int main(void)
 * [PSoC™ 6 Resources - KBA223067](https://community.cypress.com/docs/DOC-14644)
 
 ### Zephyr Driver
-This repository also provides a basic Zephyr driver implementation located in `drivers/sensor/bmx160`. The driver is standalone and does not depend on the separate BMI160 or BMM150 drivers. Enable `CONFIG_BMX160` to use it.
+This repository also provides a basic Zephyr driver implementation located in `drivers/sensor/bosch/bmx160`. The driver is standalone and does not depend on the separate BMI160 or BMM150 drivers. Enable `CONFIG_BMX160` to use it.
 The driver exposes acceleration, gyro and magnetometer data through the standard
 `SENSOR_CHAN_*_XYZ` channels so existing application code written for the
 upstream BMI160 driver can be reused without modifications.
