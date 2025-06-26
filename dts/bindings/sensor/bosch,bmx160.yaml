@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+
+description: Bosch BMX160 9-axis sensor
+
+include: sensor-device.yaml
+
+properties:
+  int-gpios:
+    type: phandle-array
+    required: false
+    description: |
+      Connection for INT1 used by the BMI160 part of the sensor.
+  drdy-gpios:
+    type: phandle-array
+    required: false
+    description: |
+      Data ready pin of the internal BMM150 magnetometer.

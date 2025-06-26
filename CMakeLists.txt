@@ -1,2 +1,2 @@
-zephyr_include_directories(drivers/sensor/bmx160)
-add_subdirectory(drivers/sensor/bmx160)
+zephyr_include_directories_ifdef(CONFIG_BMX160 drivers/sensor/bosch/bmx160)
+add_subdirectory_ifdef(CONFIG_BMX160 drivers/sensor/bosch/bmx160)

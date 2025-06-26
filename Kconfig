@@ -1,5 +1,5 @@
 menu "BMX160 driver"
 
-source "drivers/sensor/bmx160/Kconfig"
+source "drivers/sensor/bosch/bmx160/Kconfig"
 
 endmenu
