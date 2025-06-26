@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: Apache-2.0
+
+description: BMX160 9-axis sensor connected via I2C
+
+compatible: "bosch,bmx160"
+
+include: ["i2c-device.yaml", "bosch,bmx160.yaml"]

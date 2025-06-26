@@ -1,6 +1,88 @@
 menuconfig BMX160
     bool "BMX160 sensor"
-    select BMI160
-    select BMM150
+    default y
+    depends on DT_HAS_BOSCH_BMX160_ENABLED
+    select I2C if $(dt_compat_on_bus,$(DT_COMPAT_BOSCH_BMX160),i2c)
     help
       Enable driver for the Bosch BMX160 9-axis sensor.
+
+if BMX160
+
+choice
+    prompt "Accelerometer range"
+    default BMX160_ACCEL_RANGE_2G
+
+config BMX160_ACCEL_RANGE_2G
+    bool "2G"
+
+config BMX160_ACCEL_RANGE_4G
+    bool "4G"
+
+config BMX160_ACCEL_RANGE_8G
+    bool "8G"
+
+config BMX160_ACCEL_RANGE_16G
+    bool "16G"
+endchoice
+
+choice
+    prompt "Gyroscope range"
+    default BMX160_GYRO_RANGE_2000DPS
+
+config BMX160_GYRO_RANGE_2000DPS
+    bool "2000 DPS"
+
+config BMX160_GYRO_RANGE_1000DPS
+    bool "1000 DPS"
+
+config BMX160_GYRO_RANGE_500DPS
+    bool "500 DPS"
+
+config BMX160_GYRO_RANGE_250DPS
+    bool "250 DPS"
+
+config BMX160_GYRO_RANGE_125DPS
+    bool "125 DPS"
+endchoice
+
+choice
+    prompt "Accelerometer ODR"
+    default BMX160_ACCEL_ODR_100
+
+config BMX160_ACCEL_ODR_50
+    bool "50 Hz"
+
+config BMX160_ACCEL_ODR_100
+    bool "100 Hz"
+
+config BMX160_ACCEL_ODR_200
+    bool "200 Hz"
+
+config BMX160_ACCEL_ODR_400
+    bool "400 Hz"
+
+config BMX160_ACCEL_ODR_800
+    bool "800 Hz"
+endchoice
+
+choice
+    prompt "Gyroscope ODR"
+    default BMX160_GYRO_ODR_100
+
+config BMX160_GYRO_ODR_50
+    bool "50 Hz"
+
+config BMX160_GYRO_ODR_100
+    bool "100 Hz"
+
+config BMX160_GYRO_ODR_200
+    bool "200 Hz"
+
+config BMX160_GYRO_ODR_400
+    bool "400 Hz"
+
+config BMX160_GYRO_ODR_800
+    bool "800 Hz"
+endchoice
+
+endif # BMX160

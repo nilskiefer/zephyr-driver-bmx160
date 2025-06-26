@@ -91,7 +91,37 @@ int main(void)
 * [PSoC™ 6 Resources - KBA223067](https://community.cypress.com/docs/DOC-14644)
 
 ### Zephyr Driver
-This repository also provides a basic Zephyr driver implementation located in `drivers/sensor/bmx160`. Enable CONFIG_BMX160 to use it.
+This repository also provides a basic Zephyr driver implementation located in `drivers/sensor/bmx160`. The driver is standalone and does not depend on the separate BMI160 or BMM150 drivers. Enable `CONFIG_BMX160` to use it.
+The driver exposes acceleration, gyro and magnetometer data through the standard
+`SENSOR_CHAN_*_XYZ` channels so existing application code written for the
+upstream BMI160 driver can be reused without modifications.
+
+Default ranges and output data rates can be configured via dedicated Kconfig
+options (`BMX160_ACCEL_RANGE_*`, `BMX160_GYRO_RANGE_*`,
+`BMX160_ACCEL_ODR_*` and `BMX160_GYRO_ODR_*`).
+
+### Zephyr Module Integration
+This repository can be added to a Zephyr workspace as an external module. In
+your ``west.yml`` manifest add a project entry pointing to this repository. When
+``west update`` is run, the build system will automatically detect the module via
+the ``zephyr/module.yml`` file.
+
+Enable the driver in your application configuration:
+
+```
+CONFIG_BMX160=y
+```
+
+Then declare the device in your devicetree overlay, for example:
+
+```
+&i2c1 {
+    bmx160@68 {
+        compatible = "bosch,bmx160";
+        reg = <0x68>;
+    };
+};
+```
 
 ---
 © Cypress Semiconductor Corporation (an Infineon company) or an affiliate of Cypress Semiconductor Corporation, 2021-2023.
