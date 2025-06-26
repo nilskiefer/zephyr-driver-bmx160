@@ -90,5 +90,8 @@ int main(void)
 * [ModusToolbox™ Software](https://github.com/Infineon/modustoolbox-software)
 * [PSoC™ 6 Resources - KBA223067](https://community.cypress.com/docs/DOC-14644)
 
+### Zephyr Driver
+This repository also provides a basic Zephyr driver implementation located in `drivers/sensor/bmx160`. Enable CONFIG_BMX160 to use it.
+
 ---
 © Cypress Semiconductor Corporation (an Infineon company) or an affiliate of Cypress Semiconductor Corporation, 2021-2023.

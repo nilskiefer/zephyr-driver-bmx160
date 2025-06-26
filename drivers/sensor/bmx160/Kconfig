@@ -1,0 +1,6 @@
+menuconfig BMX160
+    bool "BMX160 sensor"
+    select BMI160
+    select BMM150
+    help
+      Enable driver for the Bosch BMX160 9-axis sensor.
